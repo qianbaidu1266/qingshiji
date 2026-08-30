@@ -1,0 +1,104 @@
+<view class="page">
+  <!-- 状态栏占位（自定义导航栏需手动留白） -->
+  <view class="statusbar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 头部：日期与打卡状态 -->
+  <view class="header">
+    <view class="header__left">
+      <text class="header__date">{{dateText}}</text>
+      <text class="header__sub">{{weekdayText}} · 连续记录 {{streak}} 天</text>
+    </view>
+    <view class="badge">
+      <text class="badge__text">已打卡</text>
+    </view>
+  </view>
+
+  <!-- 热量总览 -->
+  <view class="card ring-card">
+    <block wx:if="{{hasGoal}}">
+      <view class="ring-card__ring">
+        <text class="ring-card__value num">{{calorie}}</text>
+        <text class="ring-card__unit">kcal</text>
+        <text class="ring-card__remain">剩余 {{remain}}</text>
+      </view>
+      <view class="ring-card__macros">
+        <view class="macro">
+          <view class="macro__top">
+            <text class="macro__name">蛋白质</text>
+            <text class="macro__value num">{{protein}} / {{proteinTarget}} g</text>
+          </view>
+          <view class="macro__track">
+            <view class="macro__fill macro__fill--protein" style="width: {{proteinTarget ? protein / proteinTarget * 100 : 0}}%;"></view>
+          </view>
+        </view>
+        <view class="macro">
+          <view class="macro__top">
+            <text class="macro__name">碳水</text>
+            <text class="macro__value num">{{carb}} / {{carbTarget}} g</text>
+          </view>
+          <view class="macro__track">
+            <view class="macro__fill macro__fill--carb" style="width: {{carbTarget ? carb / carbTarget * 100 : 0}}%;"></view>
+          </view>
+        </view>
+        <view class="macro">
+          <view class="macro__top">
+            <text class="macro__name">脂肪</text>
+            <text class="macro__value num">{{fat}} / {{fatTarget}} g</text>
+          </view>
+          <view class="macro__track">
+            <view class="macro__fill macro__fill--fat" style="width: {{fatTarget ? fat / fatTarget * 100 : 0}}%;"></view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <view wx:else class="ring-card__empty" bindtap="onGoGoal">
+      <text class="ring-card__empty-title">还没有设置减脂目标</text>
+      <text class="ring-card__empty-desc">设置身高体重与目标，立刻生成你的饮食方案</text>
+      <view class="btn-inline">
+        <text>开始设置</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷记录 -->
+  <view class="actions">
+    <view class="btn-primary" bindtap="onCamera">
+      <text>拍照识别</text>
+    </view>
+    <view class="btn-ghost" bindtap="onManual">
+      <text>手动记</text>
+    </view>
+  </view>
+
+  <!-- 今日饮食 -->
+  <view class="meals">
+    <view class="meal" wx:for="{{meals}}" wx:key="key">
+      <view class="meal__header">
+        <text class="meal__title">{{item.label}}</text>
+        <text class="meal__total num">{{item.total}} kcal</text>
+      </view>
+      <view class="card meal__card">
+        <view class="food" wx:for="{{item.items}}" wx:for-item="food" wx:key="name">
+          <view class="food__thumb"></view>
+          <view class="food__info">
+            <text class="food__name">{{food.name}}</text>
+            <text class="food__desc">{{food.desc}}</text>
+          </view>
+          <view class="food__right">
+            <text class="food__kcal num">{{food.calorie}}</text>
+            <text wx:if="{{food.estimated}}" class="food__tag">估算</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{!loading && meals.length === 0}}" class="empty">
+      <text class="empty__text">今天还没有记录</text>
+      <text class="empty__hint">拍一张照片，或者手动添加</text>
+    </view>
+  </view>
+
+  <!-- 底部给自定义 tabBar 留白 -->
+  <view class="tabbar-placeholder"></view>
+</view>

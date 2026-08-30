@@ -1,0 +1,317 @@
+.page {
+  min-height: 100vh;
+  padding: 0 40rpx;
+}
+
+.statusbar {
+  width: 100%;
+}
+
+/* ---------------- 头部 ---------------- */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0 32rpx;
+}
+
+.header__date {
+  display: block;
+  font-size: 44rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.header__sub {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.badge {
+  padding: 10rpx 22rpx;
+  background: var(--accent-soft);
+  border-radius: var(--radius-pill);
+}
+
+.badge__text {
+  font-size: 22rpx;
+  font-weight: 500;
+  color: var(--accent-deep);
+}
+
+/* ---------------- 热量卡片 ---------------- */
+.ring-card {
+  display: flex;
+  align-items: center;
+  padding: 36rpx;
+  gap: 36rpx;
+}
+
+.ring-card__ring {
+  width: 224rpx;
+  height: 224rpx;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 18rpx solid var(--divider);
+  border-radius: 50%;
+}
+
+.ring-card__value {
+  font-size: 54rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.ring-card__unit {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
+.ring-card__remain {
+  margin-top: 8rpx;
+  font-size: 20rpx;
+  color: var(--accent);
+}
+
+.ring-card__macros {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+}
+
+.macro__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.macro__name {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+}
+
+.macro__value {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.macro__track {
+  height: 12rpx;
+  background: var(--divider);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.macro__fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width 0.3s ease;
+}
+
+.macro__fill--protein {
+  background: var(--protein);
+}
+
+.macro__fill--carb {
+  background: var(--accent);
+}
+
+.macro__fill--fat {
+  background: var(--warn);
+}
+
+/* 未设置目标时的空态 */
+.ring-card__empty {
+  flex: 1;
+  padding: 24rpx 0;
+  text-align: center;
+}
+
+.ring-card__empty-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ring-card__empty-desc {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.btn-inline {
+  display: inline-block;
+  margin-top: 28rpx;
+  padding: 16rpx 44rpx;
+  background: var(--accent);
+  border-radius: var(--radius-medium);
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* ---------------- 快捷操作 ---------------- */
+.actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 40rpx;
+}
+
+.btn-primary {
+  flex: 1;
+  height: 104rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  border-radius: var(--radius-medium);
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #ffffff;
+  box-shadow: 0 10rpx 28rpx rgba(79, 122, 85, 0.22);
+}
+
+.btn-primary:active {
+  opacity: 0.85;
+}
+
+.btn-ghost {
+  width: 196rpx;
+  height: 104rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-card);
+  border: 2rpx solid var(--border);
+  border-radius: var(--radius-medium);
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.btn-ghost:active {
+  background: var(--surface-soft);
+}
+
+/* ---------------- 饮食列表 ---------------- */
+.meals {
+  margin-top: 44rpx;
+}
+
+.meal {
+  margin-bottom: 36rpx;
+}
+
+.meal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.meal__title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.meal__total {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.meal__card {
+  padding: 12rpx;
+}
+
+.food {
+  display: flex;
+  align-items: center;
+  padding: 12rpx;
+  gap: 24rpx;
+}
+
+.food__thumb {
+  width: 88rpx;
+  height: 88rpx;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #efe9dd, #e2d9c8);
+  border-radius: 24rpx;
+}
+
+.food__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.food__name {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.food__desc {
+  display: block;
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
+.food__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6rpx;
+}
+
+.food__kcal {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.food__tag {
+  padding: 2rpx 10rpx;
+  background: var(--warn-soft);
+  border-radius: 6rpx;
+  font-size: 18rpx;
+  color: var(--warn);
+}
+
+/* ---------------- 空态 ---------------- */
+.empty {
+  padding: 80rpx 0;
+  text-align: center;
+}
+
+.empty__text {
+  display: block;
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+.empty__hint {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+}
+
+/* 给固定定位的自定义 tabBar 留白 */
+.tabbar-placeholder {
+  height: 220rpx;
+}

@@ -1,0 +1,9 @@
+{
+  "name": "addFoodLog",
+  "version": "1.0.0",
+  "description": "新增饮食记录",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

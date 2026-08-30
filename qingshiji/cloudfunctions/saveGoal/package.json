@@ -1,0 +1,9 @@
+{
+  "name": "saveGoal",
+  "version": "1.0.0",
+  "description": "保存减脂目标（服务端重算营养目标）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

@@ -1,0 +1,151 @@
+/**
+ * 全局样式与设计变量
+ *
+ * 变量值与 Ardot 设计稿中的「轻食记Tokens」一一对应，
+ * 改这里即可全站换色，不要把颜色硬编码进页面 wxss。
+ */
+
+page {
+  /* 背景与表面 */
+  --bg-canvas: #f7f5f0;
+  --surface-card: #ffffff;
+  --surface-soft: #faf8f4;
+
+  /* 文字 */
+  --text-primary: #1c2a22;
+  --text-secondary: #6b7a70;
+  --text-tertiary: #9aa79e;
+
+  /* 主色（牛油果绿） */
+  --accent: #4f7a55;
+  --accent-soft: #e8f0e7;
+  --accent-deep: #3a5c40;
+
+  /* 语义色 */
+  --warn: #d97742;
+  --warn-soft: #fbeee5;
+  --protein: #c9a227;
+
+  /* 线条 */
+  --border: #e8e4dc;
+  --divider: #f0ede6;
+
+  /* 圆角 */
+  --radius-card: 20rpx;
+  --radius-medium: 16rpx;
+  --radius-small: 12rpx;
+  --radius-pill: 999rpx;
+
+  /* 间距 */
+  --pad-screen: 20rpx;
+  --gap-section: 24rpx;
+
+  /* 阴影（暖调，避免冷灰） */
+  --shadow-card: 0 6rpx 20rpx rgba(60, 50, 35, 0.06);
+  --shadow-float: 0 6rpx 18rpx rgba(60, 50, 35, 0.08);
+
+  /* 基础样式 */
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  font-size: 28rpx;
+  line-height: 1.5;
+}
+
+view,
+text,
+button,
+input,
+scroll-view {
+  box-sizing: border-box;
+}
+
+button::after {
+  border: none;
+}
+
+/* 通用卡片 */
+.card {
+  background: var(--surface-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+/* 通用分割线 */
+.divider {
+  height: 1rpx;
+  background: var(--divider);
+}
+
+/* 数字统一使用等宽风格，避免跳动 */
+.num {
+  font-family: 'SF Pro Text', -apple-system, 'Helvetica Neue', sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------- 页面通用骨架 ---------------- */
+
+.page {
+  min-height: 100vh;
+  padding: 0 40rpx;
+}
+
+/* 自定义导航栏下的状态栏占位 */
+.statusbar {
+  width: 100%;
+}
+
+/* 页面大标题 */
+.page-title {
+  display: block;
+  padding: 24rpx 0 40rpx;
+  font-size: 44rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* 区块 */
+.section {
+  margin-top: 48rpx;
+}
+
+.section__title {
+  display: block;
+  margin-bottom: 20rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* 占位提示 */
+.placeholder {
+  display: block;
+  padding: 60rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+}
+
+/* 键值行 */
+.kv-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 36rpx;
+}
+
+.kv-row__label {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+.kv-row__value {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* 给固定定位的自定义 tabBar 留白 */
+.tabbar-placeholder {
+  height: 220rpx;
+}

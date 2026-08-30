@@ -1,0 +1,58 @@
+<view class="page">
+  <view class="statusbar" style="height: {{statusBarHeight}}px;"></view>
+  <text class="page-title">我的</text>
+
+  <view class="card">
+    <view class="kv-row">
+      <text class="kv-row__label">当前用户</text>
+      <text class="kv-row__value">{{nickname}}</text>
+    </view>
+  </view>
+
+  <view class="section">
+    <text class="section__title">我的目标</text>
+    <view class="card">
+      <view class="kv-row" bindtap="onGoGoal">
+        <text class="kv-row__label">减脂目标</text>
+        <text class="kv-row__value">设置 ›</text>
+      </view>
+      <view class="divider"></view>
+      <view class="kv-row" bindtap="onGoGoal">
+        <text class="kv-row__label">个人档案</text>
+        <text class="kv-row__value">身高 / 体重 / 活动水平 ›</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <text class="section__title">偏好与提醒</text>
+    <view class="card">
+      <view class="kv-row" bindtap="onNotReady">
+        <text class="kv-row__label">忌口与偏好</text>
+        <text class="kv-row__value">设置 ›</text>
+      </view>
+      <view class="divider"></view>
+      <view class="kv-row" bindtap="onNotReady">
+        <text class="kv-row__label">餐点提醒</text>
+        <text class="kv-row__value">开启 ›</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <text class="section__title">其他</text>
+    <view class="card">
+      <view class="kv-row" bindtap="onNotReady">
+        <text class="kv-row__label">会员</text>
+        <text class="kv-row__value">了解 ›</text>
+      </view>
+      <view class="divider"></view>
+      <view class="kv-row" bindtap="onNotReady">
+        <text class="kv-row__label">隐私政策</text>
+        <text class="kv-row__value">›</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="tabbar-placeholder"></view>
+</view>

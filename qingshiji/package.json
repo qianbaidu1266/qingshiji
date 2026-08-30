@@ -1,0 +1,17 @@
+{
+  "name": "qingshiji",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "轻食记 - AI 饮食管理微信小程序",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "miniprogram-api-typings": "^5.2.3",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/plan/plan",
+    "pages/trend/trend",
+    "pages/profile/profile",
+    "pages/goal/goal"
+  ],
+  "tabBar": {
+    "custom": false,
+    "color": "#9AA79E",
+    "selectedColor": "#4F7A55",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "今日"
+      },
+      {
+        "pagePath": "pages/plan/plan",
+        "text": "方案"
+      },
+      {
+        "pagePath": "pages/trend/trend",
+        "text": "趋势"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "window": {
+    "navigationStyle": "custom",
+    "navigationBarTitleText": "轻食记",
+    "navigationBarBackgroundColor": "#F7F5F0",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F7F5F0",
+    "backgroundTextStyle": "light",
+    "enablePullDownRefresh": false
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于推荐附近的轻食餐厅"
+    }
+  },
+  "requiredPrivateInfos": [],
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

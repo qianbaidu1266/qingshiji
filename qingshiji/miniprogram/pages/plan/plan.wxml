@@ -1,0 +1,56 @@
+<view class="page">
+  <view class="statusbar" style="height: {{statusBarHeight}}px;"></view>
+  <text class="page-title">我的方案</text>
+
+  <block wx:if="{{hasGoal}}">
+    <view class="card">
+      <view class="kv-row">
+        <text class="kv-row__label">当前体重</text>
+        <text class="kv-row__value num">{{currentWeight}} kg</text>
+      </view>
+      <view class="divider"></view>
+      <view class="kv-row">
+        <text class="kv-row__label">目标体重</text>
+        <text class="kv-row__value num">{{targetWeight}} kg</text>
+      </view>
+      <view class="divider"></view>
+      <view class="kv-row">
+        <text class="kv-row__label">每周目标</text>
+        <text class="kv-row__value num">减 {{weeklyRate}} kg</text>
+      </view>
+      <view class="divider"></view>
+      <view class="kv-row">
+        <text class="kv-row__label">每日热量</text>
+        <text class="kv-row__value num">{{calorieTarget}} kcal</text>
+      </view>
+      <view class="divider"></view>
+      <view class="kv-row">
+        <text class="kv-row__label">预计还需</text>
+        <text class="kv-row__value num">{{estimatedWeeks}} 周</text>
+      </view>
+    </view>
+
+    <view class="section">
+      <text class="section__title">今日饮食计划</text>
+      <view class="card">
+        <text class="placeholder">饮食计划生成中（需接入 generatePlan 云函数）</text>
+      </view>
+    </view>
+
+    <view class="section">
+      <text class="section__title">今日运动计划</text>
+      <view class="card">
+        <text class="placeholder">运动计划生成中（需接入 generatePlan 云函数）</text>
+      </view>
+    </view>
+  </block>
+
+  <view wx:else class="card" bindtap="onGoGoal">
+    <view class="placeholder">
+      还没有设置减脂目标
+      <text style="display:block;margin-top:16rpx;color:var(--accent);">开始设置</text>
+    </view>
+  </view>
+
+  <view class="tabbar-placeholder"></view>
+</view>
