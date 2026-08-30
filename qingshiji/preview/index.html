@@ -343,6 +343,19 @@
   }
   .mealpicker__item--on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
 
+  /* ---------- 份量选择 ---------- */
+  .portion-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .portion {
+    padding: 8px 16px;
+    background: var(--surface-card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer; user-select: none;
+  }
+  .portion--on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+
   .foodlist { max-height: 220px; overflow-y: auto; margin-top: 10px; }
   .foodlist__item {
     display: flex; align-items: center; justify-content: space-between;
@@ -582,6 +595,30 @@
 
           <div class="btn-save" id="btnSave" onclick="saveGoal()">保存并生成方案</div>
         </div>
+
+        <!-- ============ 记录饮食页 ============ -->
+        <div class="page" id="page-record">
+          <div class="nav">
+            <span class="nav__back" onclick="goBack()">‹ 返回</span>
+            <span class="nav__title">记录饮食</span>
+            <span class="nav__back nav__back--placeholder">‹ 返回</span>
+          </div>
+
+          <div class="mealpicker" id="recordMeals"></div>
+
+          <span class="sheet__label">搜索食物库</span>
+          <input class="sheet__input" id="recordSearch"
+                 placeholder="如：鸡胸肉 / 米饭 / 奶茶" oninput="onRecordSearch()">
+
+          <div class="section">
+            <span class="section__title" id="recordListTitle">常见食物</span>
+            <div class="card">
+              <div class="foodlist" id="recordList"></div>
+            </div>
+          </div>
+
+          <div id="recordDetail"></div>
+        </div>
       </div>
 
       <!-- 底部 TabBar -->
@@ -598,22 +635,6 @@
           </div>
           <div class="tabbar__item" data-page="profile" onclick="switchTab('profile')">
             <span class="tabbar__icon">●</span><span class="tabbar__label">我的</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 记录弹层 -->
-      <div class="sheet" id="foodSheet">
-        <div class="sheet__body">
-          <div class="sheet__title">手动记录</div>
-          <span class="sheet__label">餐次</span>
-          <div class="mealpicker" id="mealPicker"></div>
-          <span class="sheet__label">搜索食物</span>
-          <input class="sheet__input" id="foodSearch" placeholder="输入食物名，如：鸡胸肉" oninput="searchFood()">
-          <div class="foodlist" id="foodList"></div>
-          <div class="sheet__row">
-            <div class="sheet__btn sheet__btn--cancel" onclick="closeSheet('foodSheet')">取消</div>
-            <div class="sheet__btn sheet__btn--primary" onclick="addFood()">添加</div>
           </div>
         </div>
       </div>
@@ -681,23 +702,76 @@ function validate(p, targetWeight, targetWeeks) {
 }
 
 /* ================= 应用状态 ================= */
+/**
+ * 食物库（与云端 foodLibrary 种子数据格式一致）
+ * cal/p/f/c 均为**每 100g** 数值，portions 为常见份量选项
+ */
 const FOOD_LIBRARY = [
-  { name: '燕麦粥', cal: 180, portion: '1碗 250g' },
-  { name: '全麦面包', cal: 130, portion: '1片 40g' },
-  { name: '水煮蛋', cal: 78, portion: '1个 50g' },
-  { name: '牛奶', cal: 120, portion: '1杯 250ml' },
-  { name: '拿铁咖啡', cal: 120, portion: '1杯 300ml' },
-  { name: '鸡胸肉沙拉', cal: 320, portion: '1份 300g' },
-  { name: '牛肉面', cal: 550, portion: '1碗 500g' },
-  { name: '米饭', cal: 232, portion: '1碗 200g' },
-  { name: '炒青菜', cal: 90, portion: '1份 200g' },
-  { name: '番茄炒蛋', cal: 210, portion: '1份 250g' },
-  { name: '酸奶', cal: 100, portion: '1杯 150g' },
-  { name: '苹果', cal: 85, portion: '1个 200g' },
-  { name: '鸡腿', cal: 280, portion: '1个 150g' },
-  { name: '豆腐', cal: 160, portion: '1份 200g' },
-  { name: '三明治', cal: 350, portion: '1份 180g' },
+  { name: "米饭", aliases: ["白米饭","大米饭"], category: "主食", caloriePer100g: 116, proteinPer100g: 2.6, fatPer100g: 0.3, carbPer100g: 25.9, commonPortions: [{"label":"1碗","grams":200},{"label":"小碗","grams":150}] },
+  { name: "馒头", aliases: ["白面馒头"], category: "主食", caloriePer100g: 223, proteinPer100g: 7, fatPer100g: 1.1, carbPer100g: 47, commonPortions: [{"label":"1个","grams":100}] },
+  { name: "面条", aliases: ["清汤面","阳春面"], category: "主食", caloriePer100g: 110, proteinPer100g: 3.9, fatPer100g: 0.4, carbPer100g: 21.6, commonPortions: [{"label":"1碗","grams":200}] },
+  { name: "白粥", aliases: ["大米粥","稀饭"], category: "主食", caloriePer100g: 46, proteinPer100g: 1.1, fatPer100g: 0.3, carbPer100g: 9.9, commonPortions: [{"label":"1碗","grams":200}] },
+  { name: "肉包子", aliases: ["包子"], category: "主食", caloriePer100g: 227, proteinPer100g: 7, fatPer100g: 8, carbPer100g: 30, commonPortions: [{"label":"1个","grams":100}] },
+  { name: "猪肉饺子", aliases: ["饺子","水饺"], category: "主食", caloriePer100g: 240, proteinPer100g: 9, fatPer100g: 10, carbPer100g: 28, commonPortions: [{"label":"10个","grams":250}] },
+  { name: "蛋炒饭", aliases: ["炒饭"], category: "主食", caloriePer100g: 188, proteinPer100g: 4.5, fatPer100g: 6, carbPer100g: 29, commonPortions: [{"label":"1份","grams":300}] },
+  { name: "炒面", aliases: ["炒面条"], category: "主食", caloriePer100g: 200, proteinPer100g: 5, fatPer100g: 7, carbPer100g: 30, commonPortions: [{"label":"1份","grams":300}] },
+  { name: "全麦面包", aliases: ["吐司","面包"], category: "主食", caloriePer100g: 246, proteinPer100g: 9, fatPer100g: 3.2, carbPer100g: 45, commonPortions: [{"label":"1片","grams":40}] },
+  { name: "燕麦片", aliases: ["燕麦","麦片"], category: "主食", caloriePer100g: 367, proteinPer100g: 15, fatPer100g: 6.7, carbPer100g: 61, commonPortions: [{"label":"1份","grams":40}] },
+  { name: "宫保鸡丁", aliases: ["宫爆鸡丁"], category: "外卖荤菜", caloriePer100g: 180, proteinPer100g: 12, fatPer100g: 11, carbPer100g: 8, commonPortions: [{"label":"1份","grams":300}] },
+  { name: "鱼香肉丝", aliases: [], category: "外卖荤菜", caloriePer100g: 170, proteinPer100g: 9, fatPer100g: 10, carbPer100g: 10, commonPortions: [{"label":"1份","grams":300}] },
+  { name: "红烧肉", aliases: ["五花肉"], category: "外卖荤菜", caloriePer100g: 472, proteinPer100g: 8, fatPer100g: 45, carbPer100g: 5, commonPortions: [{"label":"1份","grams":150}] },
+  { name: "糖醋排骨", aliases: ["排骨"], category: "外卖荤菜", caloriePer100g: 280, proteinPer100g: 14, fatPer100g: 18, carbPer100g: 15, commonPortions: [{"label":"1份","grams":200}] },
+  { name: "水煮牛肉", aliases: ["水煮肉片"], category: "外卖荤菜", caloriePer100g: 190, proteinPer100g: 15, fatPer100g: 12, carbPer100g: 5, commonPortions: [{"label":"1份","grams":300}] },
+  { name: "麻婆豆腐", aliases: [], category: "外卖荤菜", caloriePer100g: 135, proteinPer100g: 8, fatPer100g: 9, carbPer100g: 6, commonPortions: [{"label":"1份","grams":300}] },
+  { name: "咖喱鸡", aliases: ["咖喱鸡肉"], category: "外卖荤菜", caloriePer100g: 160, proteinPer100g: 11, fatPer100g: 9, carbPer100g: 9, commonPortions: [{"label":"1份","grams":300}] },
+  { name: "黄焖鸡", aliases: ["黄焖鸡米饭"], category: "外卖荤菜", caloriePer100g: 165, proteinPer100g: 10, fatPer100g: 9.5, carbPer100g: 9, commonPortions: [{"label":"1份","grams":300}] },
+  { name: "酸菜鱼", aliases: [], category: "外卖荤菜", caloriePer100g: 120, proteinPer100g: 12, fatPer100g: 6.5, carbPer100g: 3, commonPortions: [{"label":"1份","grams":300}] },
+  { name: "炒青菜", aliases: ["清炒时蔬","青菜"], category: "素菜", caloriePer100g: 45, proteinPer100g: 2, fatPer100g: 2.5, carbPer100g: 4, commonPortions: [{"label":"1份","grams":200}] },
+  { name: "番茄炒蛋", aliases: ["西红柿炒鸡蛋"], category: "素菜", caloriePer100g: 105, proteinPer100g: 6, fatPer100g: 7.5, carbPer100g: 4, commonPortions: [{"label":"1份","grams":300}] },
+  { name: "酸辣土豆丝", aliases: ["土豆丝"], category: "素菜", caloriePer100g: 95, proteinPer100g: 1.5, fatPer100g: 4, carbPer100g: 14, commonPortions: [{"label":"1份","grams":200}] },
+  { name: "地三鲜", aliases: [], category: "素菜", caloriePer100g: 120, proteinPer100g: 2.5, fatPer100g: 8, carbPer100g: 10, commonPortions: [{"label":"1份","grams":300}] },
+  { name: "干煸豆角", aliases: ["四季豆"], category: "素菜", caloriePer100g: 110, proteinPer100g: 3, fatPer100g: 7, carbPer100g: 9, commonPortions: [{"label":"1份","grams":200}] },
+  { name: "蒜蓉西兰花", aliases: ["西兰花"], category: "素菜", caloriePer100g: 60, proteinPer100g: 3, fatPer100g: 3.5, carbPer100g: 5, commonPortions: [{"label":"1份","grams":200}] },
+  { name: "手撕包菜", aliases: ["炒包菜","卷心菜"], category: "素菜", caloriePer100g: 70, proteinPer100g: 1.8, fatPer100g: 4.5, carbPer100g: 6, commonPortions: [{"label":"1份","grams":200}] },
+  { name: "汉堡", aliases: ["汉堡包"], category: "快餐", caloriePer100g: 250, proteinPer100g: 12, fatPer100g: 10, carbPer100g: 28, commonPortions: [{"label":"1个","grams":180}] },
+  { name: "炸鸡", aliases: ["炸鸡腿","炸鸡块"], category: "快餐", caloriePer100g: 280, proteinPer100g: 18, fatPer100g: 18, carbPer100g: 12, commonPortions: [{"label":"1块","grams":80}] },
+  { name: "薯条", aliases: ["炸薯条"], category: "快餐", caloriePer100g: 312, proteinPer100g: 3.5, fatPer100g: 15, carbPer100g: 41, commonPortions: [{"label":"中份","grams":110}] },
+  { name: "披萨", aliases: ["比萨"], category: "快餐", caloriePer100g: 266, proteinPer100g: 11, fatPer100g: 10, carbPer100g: 33, commonPortions: [{"label":"1块","grams":100}] },
+  { name: "三明治", aliases: [], category: "快餐", caloriePer100g: 250, proteinPer100g: 12, fatPer100g: 9, carbPer100g: 30, commonPortions: [{"label":"1个","grams":180}] },
+  { name: "饭团", aliases: ["三角饭团"], category: "便利店", caloriePer100g: 180, proteinPer100g: 4, fatPer100g: 2, carbPer100g: 36, commonPortions: [{"label":"1个","grams":110}] },
+  { name: "茶叶蛋", aliases: ["卤蛋"], category: "便利店", caloriePer100g: 145, proteinPer100g: 13, fatPer100g: 10, carbPer100g: 1.5, commonPortions: [{"label":"1个","grams":55}] },
+  { name: "关东煮萝卜", aliases: ["关东煮"], category: "便利店", caloriePer100g: 20, proteinPer100g: 0.6, fatPer100g: 0.1, carbPer100g: 4, commonPortions: [{"label":"1串","grams":80}] },
+  { name: "水煮蛋", aliases: ["白煮蛋","鸡蛋"], category: "早餐", caloriePer100g: 144, proteinPer100g: 13, fatPer100g: 9.5, carbPer100g: 1, commonPortions: [{"label":"1个","grams":50}] },
+  { name: "豆浆", aliases: [], category: "早餐", caloriePer100g: 31, proteinPer100g: 3, fatPer100g: 1.6, carbPer100g: 1.2, commonPortions: [{"label":"1杯","grams":250}] },
+  { name: "油条", aliases: [], category: "早餐", caloriePer100g: 388, proteinPer100g: 6.9, fatPer100g: 17.6, carbPer100g: 51, commonPortions: [{"label":"1根","grams":60}] },
+  { name: "小笼包", aliases: ["小笼"], category: "早餐", caloriePer100g: 230, proteinPer100g: 8, fatPer100g: 9, carbPer100g: 29, commonPortions: [{"label":"1笼","grams":200}] },
+  { name: "鸡胸肉", aliases: ["鸡胸"], category: "蛋白", caloriePer100g: 133, proteinPer100g: 19.4, fatPer100g: 5, carbPer100g: 2.5, commonPortions: [{"label":"1块","grams":150}] },
+  { name: "牛肉", aliases: ["瘦牛肉"], category: "蛋白", caloriePer100g: 125, proteinPer100g: 20.2, fatPer100g: 4.2, carbPer100g: 1.2, commonPortions: [{"label":"1份","grams":150}] },
+  { name: "三文鱼", aliases: ["鲑鱼"], category: "蛋白", caloriePer100g: 139, proteinPer100g: 17.2, fatPer100g: 7.8, carbPer100g: 0, commonPortions: [{"label":"1份","grams":120}] },
+  { name: "豆腐", aliases: ["北豆腐"], category: "蛋白", caloriePer100g: 81, proteinPer100g: 8.1, fatPer100g: 3.7, carbPer100g: 4.2, commonPortions: [{"label":"1份","grams":200}] },
+  { name: "虾仁", aliases: ["虾"], category: "蛋白", caloriePer100g: 93, proteinPer100g: 18.6, fatPer100g: 0.8, carbPer100g: 2.8, commonPortions: [{"label":"1份","grams":100}] },
+  { name: "苹果", aliases: [], category: "水果", caloriePer100g: 52, proteinPer100g: 0.3, fatPer100g: 0.2, carbPer100g: 13.8, commonPortions: [{"label":"1个","grams":200}] },
+  { name: "香蕉", aliases: [], category: "水果", caloriePer100g: 89, proteinPer100g: 1.1, fatPer100g: 0.3, carbPer100g: 22.8, commonPortions: [{"label":"1根","grams":120}] },
+  { name: "橙子", aliases: ["橘子"], category: "水果", caloriePer100g: 47, proteinPer100g: 0.9, fatPer100g: 0.1, carbPer100g: 11.8, commonPortions: [{"label":"1个","grams":180}] },
+  { name: "西瓜", aliases: [], category: "水果", caloriePer100g: 30, proteinPer100g: 0.6, fatPer100g: 0.2, carbPer100g: 7.6, commonPortions: [{"label":"1份","grams":300}] },
+  { name: "牛奶", aliases: ["纯牛奶"], category: "饮品", caloriePer100g: 54, proteinPer100g: 3, fatPer100g: 3.2, carbPer100g: 3.4, commonPortions: [{"label":"1杯","grams":250}] },
+  { name: "酸奶", aliases: ["无糖酸奶"], category: "饮品", caloriePer100g: 72, proteinPer100g: 2.5, fatPer100g: 2.7, carbPer100g: 9.3, commonPortions: [{"label":"1杯","grams":150}] },
+  { name: "美式咖啡", aliases: ["黑咖啡","美式"], category: "饮品", caloriePer100g: 2, proteinPer100g: 0.1, fatPer100g: 0, carbPer100g: 0.3, commonPortions: [{"label":"1杯","grams":250}] },
+  { name: "拿铁", aliases: ["拿铁咖啡"], category: "饮品", caloriePer100g: 47, proteinPer100g: 3, fatPer100g: 2.4, carbPer100g: 3.6, commonPortions: [{"label":"1杯","grams":300}] },
+  { name: "奶茶", aliases: ["珍珠奶茶"], category: "饮品", caloriePer100g: 70, proteinPer100g: 1, fatPer100g: 2.5, carbPer100g: 10, commonPortions: [{"label":"1杯","grams":500}] },
+  { name: "可乐", aliases: ["碳酸饮料"], category: "饮品", caloriePer100g: 43, proteinPer100g: 0, fatPer100g: 0, carbPer100g: 10.8, commonPortions: [{"label":"1罐","grams":330}] },
 ];
+
+/** 按份量换算（每 100g 数值 → 实际份量） */
+function calcByPortion(food, grams) {
+  const k = grams / 100;
+  return {
+    calorie: Math.round(food.caloriePer100g * k),
+    protein: Math.round(food.proteinPer100g * k),
+    fat: Math.round(food.fatPer100g * k),
+    carb: Math.round(food.carbPer100g * k),
+  };
+}
 
 const state = {
   page: 'index',
@@ -1055,57 +1129,177 @@ function setActivity(v) {
   recalc();
 }
 
-/* ================= 手动记录 ================= */
-function openSheet(id) {
-  $('foodSearch').value = '';
-  state.search = '';
-  renderMealPicker();
-  searchFood();
-  $('foodSheet').classList.add('show');
+/* ================= 记录饮食页 ================= */
+
+const record = {
+  mealType: 'lunch',
+  keyword: '',
+  selected: null,   // FoodItem
+  portions: [],     // [{label, grams}]
+  activeGrams: 0,
+};
+
+/** 按当前时间推断默认餐次，减少一次点击 */
+function guessMeal() {
+  const h = new Date().getHours();
+  if (h < 10) return 'breakfast';
+  if (h < 15) return 'lunch';
+  if (h < 21) return 'dinner';
+  return 'snack';
 }
-function closeSheet(id) { $(id).classList.remove('show'); }
-function renderMealPicker() {
-  $('mealPicker').innerHTML = Object.keys(MEAL_LABELS).map(k => `
-    <div class="mealpicker__item ${state.mealType === k ? 'mealpicker__item--on' : ''}"
-         onclick="setMealType('${k}')">${MEAL_LABELS[k]}</div>`).join('');
+
+function openRecord(mealType) {
+  record.mealType = mealType || guessMeal();
+  record.keyword = '';
+  record.selected = null;
+  record.portions = [];
+  record.activeGrams = 0;
+  $('recordSearch').value = '';
+  renderRecordMeals();
+  renderRecordList();
+  $('recordDetail').innerHTML = '';
+  go('record');
 }
-function setMealType(k) { state.mealType = k; renderMealPicker(); }
-function searchFood() {
-  state.search = $('foodSearch').value.trim();
-  const list = FOOD_LIBRARY.filter(f => f.name.includes(state.search));
-  $('foodList').innerHTML = list.length > 0
+
+function renderRecordMeals() {
+  $('recordMeals').innerHTML = Object.keys(MEAL_LABELS).map(k => `
+    <div class="mealpicker__item ${record.mealType === k ? 'mealpicker__item--on' : ''}"
+         onclick="setRecordMeal('${k}')">${MEAL_LABELS[k]}</div>`).join('');
+}
+
+function setRecordMeal(k) {
+  record.mealType = k;
+  renderRecordMeals();
+  renderRecordDetail();
+}
+
+function onRecordSearch() {
+  record.keyword = $('recordSearch').value.trim();
+  renderRecordList();
+}
+
+/** 关键词为空时展示常用列表，否则按 name + 别名搜索 */
+function filterFoods() {
+  const kw = record.keyword.toLowerCase();
+  if (!kw) return FOOD_LIBRARY.slice(0, 12);
+  return FOOD_LIBRARY.filter(f =>
+    f.name.toLowerCase().includes(kw) ||
+    (f.aliases || []).some(a => a.toLowerCase().includes(kw))
+  );
+}
+
+function renderRecordList() {
+  const list = filterFoods();
+  $('recordListTitle').textContent = record.keyword ? '搜索结果' : '常见食物';
+  const activeId = record.selected ? record.selected.name : null;
+  $('recordList').innerHTML = list.length > 0
     ? list.map(f => `
-        <div class="foodlist__item" onclick="pickFood('${f.name}', ${f.cal})">
+        <div class="foodlist__item" onclick="pickRecordFood('${f.name}')"
+             style="${activeId === f.name ? 'background:var(--accent-soft);' : ''}">
           <span class="foodlist__name">${f.name}</span>
-          <span class="foodlist__cal num">${f.cal} kcal · ${f.portion}</span>
+          <span class="foodlist__cal">${f.category} · 每100g ${f.caloriePer100g} kcal</span>
         </div>`).join('')
-    : '<div class="placeholder">没有匹配的食物，将按估算添加</div>';
+    : '<div class="placeholder">没有找到相关食物</div>';
 }
-function pickFood(name, cal) {
+
+/** 选中食物：生成份量选项，默认取第一个，并算出营养预览 */
+function pickRecordFood(name) {
+  const food = FOOD_LIBRARY.find(f => f.name === name);
+  if (!food) return;
+
+  const portions = (food.commonPortions || []).slice();
+  if (!portions.some(p => p.grams === 100)) {
+    portions.push({ label: '100g', grams: 100 });
+  }
+
+  record.selected = food;
+  record.portions = portions;
+  record.activeGrams = portions[0].grams;
+
+  renderRecordList();
+  renderRecordDetail();
+}
+
+function setRecordPortion(grams) {
+  record.activeGrams = grams;
+  renderRecordDetail();
+}
+
+function renderRecordDetail() {
+  const f = record.selected;
+  if (!f) { $('recordDetail').innerHTML = ''; return; }
+
+  const n = calcByPortion(f, record.activeGrams);
+  const label = (record.portions.find(p => p.grams === record.activeGrams) || {}).label
+    || `${record.activeGrams}g`;
+
+  $('recordDetail').innerHTML = `
+    <div class="section">
+      <span class="section__title">份量</span>
+      <div class="portion-row">
+        ${record.portions.map(p => `
+          <div class="portion ${p.grams === record.activeGrams ? 'portion--on' : ''}"
+               onclick="setRecordPortion(${p.grams})">${p.label}</div>`).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <span class="section__title">营养预览</span>
+      <div class="card" style="padding:16px;">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--divider);">
+          <span style="font-size:14px;font-weight:600;">${f.name} · ${label}</span>
+          <span class="num" style="font-size:20px;font-weight:700;color:var(--accent);">${n.calorie} kcal</span>
+        </div>
+        <div style="display:flex;padding-top:12px;">
+          <div style="flex:1;text-align:center;">
+            <span style="display:block;font-size:11px;color:var(--text-secondary);">蛋白质</span>
+            <span class="num" style="display:block;margin-top:4px;font-size:15px;font-weight:600;">${n.protein} g</span>
+          </div>
+          <div style="flex:1;text-align:center;">
+            <span style="display:block;font-size:11px;color:var(--text-secondary);">脂肪</span>
+            <span class="num" style="display:block;margin-top:4px;font-size:15px;font-weight:600;">${n.fat} g</span>
+          </div>
+          <div style="flex:1;text-align:center;">
+            <span style="display:block;font-size:11px;color:var(--text-secondary);">碳水</span>
+            <span class="num" style="display:block;margin-top:4px;font-size:15px;font-weight:600;">${n.carb} g</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-save" onclick="saveRecord()">加入${MEAL_LABELS[record.mealType]}</div>`;
+}
+
+/** 保存到 state.meals 并返回首页（与小程序 addFoodLog 行为一致） */
+function saveRecord() {
+  const f = record.selected;
+  if (!f) return;
+
+  const label = (record.portions.find(p => p.grams === record.activeGrams) || {}).label
+    || `${record.activeGrams}g`;
+  const n = calcByPortion(f, record.activeGrams);
+
   state.meals.push({
-    mealType: state.mealType,
-    name, cal,
-    portion: FOOD_LIBRARY.find(f => f.name === name)?.portion || '1份',
+    mealType: record.mealType,
+    name: f.name,
+    cal: n.calorie,
+    portion: `${label} · ${record.activeGrams}g`,
     estimated: false,
   });
-  closeSheet('foodSheet');
-  toast(`已记录 ${name}`);
+
+  toast(`已记入${MEAL_LABELS[record.mealType]}`);
   renderIndex();
+  setTimeout(() => goBack(), 700);
 }
 
 /* ================= 初始化 ================= */
 function init() {
-  const now = new Date();
-  const h = now.getHours();
-  // 时间相关打卡状态
   state.streak = 3;
   switchTab('index');
   renderIndex();
   renderProfile();
-  // 首页按钮
   $('btnCamera').addEventListener('click', () => toast('拍照识别接入中（AI 视觉服务）'));
-  $('btnManual').addEventListener('click', () => openSheet('foodSheet'));
-  renderMealPicker();
+  $('btnManual').addEventListener('click', () => openRecord());
 }
 
 document.addEventListener('DOMContentLoaded', init);

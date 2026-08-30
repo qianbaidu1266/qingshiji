@@ -169,17 +169,86 @@ export interface FoodItem {
   commonPortions?: Array<{ label: string; grams: number }>
 }
 
-/** 按关键词搜索食物库 */
+/**
+ * 按关键词搜索食物库
+ * 同时匹配 name 与 aliases（别名），大小写不敏感
+ */
 export async function searchFood(keyword: string, limit = 20): Promise<FoodItem[]> {
-  if (!keyword.trim()) return []
+  const kw = keyword.trim()
+  if (!kw) return []
+
+  const reg = db().RegExp({ regexp: kw, options: 'i' })
+  const _ = db().command
+
   const res = await db()
     .collection(COLLECTIONS.foodLibrary)
-    .where({
-      name: db().RegExp({ regexp: keyword.trim(), options: 'i' }),
-    })
+    .where(_.or([{ name: reg }, { aliases: reg }]))
+    .limit(limit)
+    .get()
+
+  return res.data as FoodItem[]
+}
+
+/** 常用食物（空搜索时的默认列表，降低输入门槛） */
+export async function getCommonFoods(limit = 15): Promise<FoodItem[]> {
+  const res = await db()
+    .collection(COLLECTIONS.foodLibrary)
     .limit(limit)
     .get()
   return res.data as FoodItem[]
+}
+
+/** 按分类取食物 */
+export async function getFoodsByCategory(
+  category: string,
+  limit = 20
+): Promise<FoodItem[]> {
+  const res = await db()
+    .collection(COLLECTIONS.foodLibrary)
+    .where({ category })
+    .limit(limit)
+    .get()
+  return res.data as FoodItem[]
+}
+
+/** 食物分类（与种子数据保持一致） */
+export const FOOD_CATEGORIES = [
+  '主食',
+  '外卖荤菜',
+  '素菜',
+  '快餐',
+  '便利店',
+  '早餐',
+  '蛋白',
+  '水果',
+  '饮品',
+] as const
+
+/**
+ * 按份量换算营养值
+ *
+ * 库里存的是每 100g 的数值，这里做线性换算。
+ * 这是**换算**不是"估算"，结果是确定的，与 isEstimated 无关。
+ */
+export function calcByPortion(food: FoodItem, grams: number) {
+  const factor = grams / 100
+  return {
+    calorie: Math.round(food.caloriePer100g * factor),
+    protein: Math.round(food.proteinPer100g * factor),
+    fat: Math.round(food.fatPer100g * factor),
+    carb: Math.round(food.carbPer100g * factor),
+  }
+}
+
+/** 份量选项：优先用食物自带的常见份量，补一个 100g 兜底 */
+export function buildPortionOptions(
+  food: FoodItem
+): Array<{ label: string; grams: number }> {
+  const list = (food.commonPortions || []).slice()
+  if (!list.some((p) => p.grams === 100)) {
+    list.push({ label: '100g', grams: 100 })
+  }
+  return list
 }
 
 /* ------------------------------------------------------------------ */

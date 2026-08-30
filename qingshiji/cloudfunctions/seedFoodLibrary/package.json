@@ -1,0 +1,9 @@
+{
+  "name": "seedFoodLibrary",
+  "version": "1.0.0",
+  "description": "导入食物库种子数据（幂等，按名称去重）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

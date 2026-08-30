@@ -1,0 +1,120 @@
+<view class="page">
+  <view class="statusbar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 返回与标题 -->
+  <view class="nav">
+    <view class="nav__back" bindtap="onBack">
+      <text class="nav__back-text">‹ 返回</text>
+    </view>
+    <text class="nav__title">记录饮食</text>
+    <view class="nav__back nav__back--placeholder">
+      <text class="nav__back-text">‹ 返回</text>
+    </view>
+  </view>
+
+  <!-- 餐次选择 -->
+  <view class="meal-seg">
+    <view
+      wx:for="{{meals}}"
+      wx:key="value"
+      class="meal-seg__item {{mealType === item.value ? 'meal-seg__item--on' : ''}}"
+      data-value="{{item.value}}"
+      bindtap="onMealChange"
+    >
+      <text>{{item.label}}</text>
+    </view>
+  </view>
+
+  <!-- 搜索 -->
+  <view class="search">
+    <input
+      class="search__input"
+      value="{{keyword}}"
+      placeholder="搜索食物，如：鸡胸肉 / 米饭"
+      placeholder-class="search__ph"
+      confirm-type="search"
+      bindinput="onSearchInput"
+    />
+    <view wx:if="{{keyword}}" class="search__clear" bindtap="onClearSearch">
+      <text>✕</text>
+    </view>
+  </view>
+
+  <!-- 食物列表 -->
+  <view class="section">
+    <text class="section__title">{{isSearch ? '搜索结果' : '常见食物'}}</text>
+    <view class="card">
+      <view
+        wx:for="{{foods}}"
+        wx:key="_id"
+        class="food-row {{selectedFood && selectedFood._id === item._id ? 'food-row--on' : ''}}"
+        data-index="{{index}}"
+        bindtap="onPickFood"
+      >
+        <view class="food-row__main">
+          <text class="food-row__name">{{item.name}}</text>
+          <text class="food-row__meta">
+            {{item.category}} · 每100g {{item.caloriePer100g}} kcal
+          </text>
+        </view>
+        <text
+          wx:if="{{selectedFood && selectedFood._id === item._id}}"
+          class="food-row__check"
+        >✓</text>
+      </view>
+
+      <view wx:if="{{foods.length === 0 && !loading}}" class="placeholder">
+        没有找到相关食物
+      </view>
+      <view wx:if="{{loading}}" class="placeholder">搜索中…</view>
+    </view>
+  </view>
+
+  <!-- 选中后的份量与营养预览 -->
+  <block wx:if="{{selectedFood && preview}}">
+    <view class="section">
+      <text class="section__title">份量</text>
+      <view class="portion-row">
+        <view
+          wx:for="{{portions}}"
+          wx:key="grams"
+          class="portion {{activeGrams === item.grams ? 'portion--on' : ''}}"
+          data-grams="{{item.grams}}"
+          bindtap="onPickPortion"
+        >
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <text class="section__title">营养预览</text>
+      <view class="card preview-card">
+        <view class="preview__head">
+          <text class="preview__name">{{selectedFood.name}} · {{preview.label}}</text>
+          <text class="preview__kcal num">{{preview.calorie}} kcal</text>
+        </view>
+        <view class="preview__macros">
+          <view class="pmacro">
+            <text class="pmacro__label">蛋白质</text>
+            <text class="pmacro__value num">{{preview.protein}} g</text>
+          </view>
+          <view class="pmacro">
+            <text class="pmacro__label">脂肪</text>
+            <text class="pmacro__value num">{{preview.fat}} g</text>
+          </view>
+          <view class="pmacro">
+            <text class="pmacro__label">碳水</text>
+            <text class="pmacro__value num">{{preview.carb}} g</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="btn-save {{saving ? 'btn-save--disabled' : ''}}" bindtap="onSave">
+      <text>{{saving ? '记录中…' : '加入' + mealLabel}}</text>
+    </view>
+  </block>
+
+  <view class="tabbar-placeholder"></view>
+</view>

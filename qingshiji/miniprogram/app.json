@@ -4,7 +4,8 @@
     "pages/plan/plan",
     "pages/trend/trend",
     "pages/profile/profile",
-    "pages/goal/goal"
+    "pages/goal/goal",
+    "pages/record/record"
   ],
   "tabBar": {
     "custom": false,

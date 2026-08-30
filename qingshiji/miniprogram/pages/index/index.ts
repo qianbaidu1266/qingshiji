@@ -141,7 +141,7 @@ Page({
   },
 
   onManual() {
-    wx.showToast({ title: '手动记录待接入', icon: 'none' })
+    wx.navigateTo({ url: '/pages/record/record' })
   },
 
   onGoGoal() {
